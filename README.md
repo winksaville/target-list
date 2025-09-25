@@ -4,7 +4,24 @@ An awk script that lists all documented targets in a Makefile. This is intended 
 
 ## Example
 
+See the `test/Makefile` and `test/support/target-list.awk`
+for an example of how to use this script.
 
+```
+$ cd test
+$ make help
+Manage the building and testing this project
+
+Usage:
+   make <target>  Examples make compile hw.c
+                           make c hw.c
+
+Targets:
+help h H   Show this help message
+lib.<cmd>  `make lib.<cmd> PKG=<pkg>` -> `arduino-cli lib <cmd> "$(PKG)"`. For lib help `make lib.help`. Example: `make lib.install PKG="ArduinoJson"`
+compile c  Build the project from source
+clean      Remove build artifacts
+```
 
 ## License
 

@@ -2,7 +2,7 @@
 # target-list.awk — extract "<targets>  <description>" from the main Makefile.
 #
 # Example Makefile usage:
-#
+# ----------------------------------
 # .PHONY: help h H compile c clean
 # 
 # help h H:     ## Show this help message
@@ -15,11 +15,16 @@
 # 	@echo "Targets:"
 # 	@awk -f support/target-list.awk $(lastword $(MAKEFILE_LIST))
 # 
-# compile c:    ## Build the project from source
-# 	echo "Translate source files to object files."
+# lib.%: ## `make lib.<cmd> PKG=<pkg>` -> `arduino-cli lib <cmd> "$(PKG)"`. For lib help `make lib.help`. Example: `make lib.install PKG="ArduinoJson"`
+# 	@[ -n "$*" ] && arduino-cli lib "$*" "$(PKG)" \
+# 	 || { echo "Error: missing cmd in lib.<cmd>" >&2; exit 1; }
+#
+# compile c: ## Build the project from source
+# 	@echo "Translate source files to object files."
 # 
-# clean:        ## Remove build artifacts
-# 	echo "Remove any and all build artifacts."
+# clean: ## Remove build artifacts
+# 	@echo "Remove any and all build artifacts."
+# ----------------------------------
 #
 # Rules:
 # - Parse ONLY the file passed as argv[1] (typically $(lastword $(MAKEFILE_LIST))).
