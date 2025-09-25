@@ -37,7 +37,7 @@
 # - Render "name.%" as "name.<cmd>" in the left column.
 # - Preserve order. Columns aligned with spaces.
 
-BEGIN { n=0; maxw=0 }
+BEGIN { n=0; maxw=0; if (indent == 0) indent=3 }
 
 # --- helpers (avoid DRY) ---
 function ltrim(s){ sub(/^[[:space:]]+/, "", s); return s }      # remove leading spaces
@@ -76,10 +76,9 @@ function render_target(t){ if (t ~ /\.%$/) sub(/\.%$/, ".<cmd>", t); return t }
 }
 
 END {
-  # Print aligned two-column output with spaces (not tabs)
   for (i=1; i<=n; i++) {
-    pad = maxw - length(L[i]) + 2  # at least 2 spaces between cols
-    printf "%s", L[i]
+    pad = maxw - length(L[i]) + 2
+    printf "%*s%s", indent, "", L[i]
     while (pad-- > 0) printf " "
     printf "%s\n", D[i]
   }
