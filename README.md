@@ -2,6 +2,11 @@
 
 An awk script that lists all documented targets in a Makefile. This is intended to be used by a Makefile to generate a help message.
 
+ChatGPT provided most of the grunt work for this script. See [1] for the conversation:
+
+[1]:"Makefile help critique": https://chatgpt.com/share/68d4945e-cd50-800c-b5c8-498ae619caa4
+
+
 ## Example
 
 See the `test/Makefile` and `test/support/target-list.awk`

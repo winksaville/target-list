@@ -3,9 +3,13 @@
 #
 # Example Makefile usage:
 # ----------------------------------
+# NOTE: Recipe lines below are written as "#<space><tab>cmd".
+#       If you delete the leading "# ", the tab is preserved,
+#       so you get a valid Makefile with proper tabs.
+#
 # .PHONY: help h H compile c clean
 # 
-# help h H:     ## Show this help message
+# help h H: ## Show this help message
 # 	@echo "Manage the building and testing this project"
 # 	@echo ""
 # 	@echo "Usage:"
@@ -52,13 +56,25 @@ function render_target(t){ if (t ~ /\.%$/) sub(/\.%$/, ".<cmd>", t); return t }
   if (is_recipe(line)) next   # skip recipe lines
 
   # Candidate line regex:
-  #   group 1 = raw target list
-  #   group 2 = description
+  #   verifies the structure; extraction below is POSIX-awk friendly (no submatch array)
   re = "^[[:space:]]*([^:]+):[[:space:]]+[^#]*[[:space:]]+##[[:space:]]+(.*)$"
-  if (!match(line, re, m)) next
+  if (line !~ re) next
 
-  targets_raw = trim(m[1])
-  desc = m[2]
+  # Extract targets_raw (left of first ':') and desc (right of first delimiter)
+  col = index(line, ":")
+  if (!col) next
+
+  # Require at least one whitespace after ':'
+  if (col >= length(line)) next
+  if (substr(line, col+1, 1) !~ /[[:space:]]/) next
+
+  targets_raw = trim(substr(line, 1, col-1))
+  rest = substr(line, col+1)
+
+  # Find the first delimiter [[:space:]]+##[[:space:]]+
+  if (match(rest, /[[:space:]]+##[[:space:]]+/) == 0) next
+  desc = substr(rest, RSTART + RLENGTH)
+
   if (targets_raw == "" || is_internal(desc)) next
 
   # Split target list on whitespace, rewrite any ".%" to ".<cmd>", then rejoin
@@ -83,4 +99,3 @@ END {
     printf "%s\n", D[i]
   }
 }
-
