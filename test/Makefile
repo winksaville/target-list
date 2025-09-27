@@ -1,8 +1,9 @@
 .PHONY: help h H compile c clean
 
-INDENT=3 # spaces to indent target-list choose to mathc Usage or other text
+INDENT_PAD=3 # spaces to indent target-list choose to mathc Usage or other text
+DESC_PAD=6 # spaces between target and description columns
 
-help h H:     ## Show this help message
+help h H:## Show this help message
 	@echo "Manage the building and testing this project"
 	@echo ""
 	@echo "Usage:"
@@ -10,14 +11,17 @@ help h H:     ## Show this help message
 	@echo "                           make c hw.c"
 	@echo ""
 	@echo "Targets:"
-	@awk -v indent=$(INDENT) -f support/target-list.awk $(lastword $(MAKEFILE_LIST))
+	@awk -v indent_pad=$(INDENT_PAD) -v desc_pad=$(DESC_PAD) -f support/target-list.awk $(lastword $(MAKEFILE_LIST))
 
-lib.%:   ## `make lib.<cmd> PKG=<pkg>` -> `arduino-cli lib <cmd> "$(PKG)"`. For lib help `make lib.help`. Example: `make lib.install PKG="ArduinoJson"`
-	@[ -n "$*" ] && arduino-cli lib "$*" "$(PKG)" \
-	 || { echo "Error: missing cmd in lib.<cmd>" >&2; exit 1; }
+# The nothing does nothing and allows you to see resulting command line:
+#    $ make lib.install PKG="two words"
+#    ./nothing lib install "two words"
+#    $
+lib.%:	## Runs: nothing lib <cmd> "$(PKG)"
+	./nothing lib $(@:lib.%=%) $(if $(PKG),"$(PKG)")
 
-compile c:    ## Build the project from source
+compile c: ## Build the project from source
 	@echo "Translate source files to object files."
 
-clean:        ## Remove build artifacts
+clean: ## Remove build artifacts
 	@echo "Remove any and all build artifacts."
